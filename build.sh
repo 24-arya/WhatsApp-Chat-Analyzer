@@ -4,3 +4,5 @@ pip install protobuf==3.20
 pip install --upgrade altair
 pip install altair==4.0.0
 pip install urlextract
+pip install wordcloud
+pip install emoji
