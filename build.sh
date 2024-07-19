@@ -5,4 +5,4 @@ pip install --upgrade altair
 pip install altair==4.0.0
 pip install urlextract
 pip install wordcloud
-pip install emoji
+pip install emoji==1.7.0
