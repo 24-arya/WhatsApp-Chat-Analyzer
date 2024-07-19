@@ -243,9 +243,17 @@ if uploaded_file is not None:
                 ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
                 st.pyplot(fig)
 
+            # Attempt to load a TrueType font or fallback to default font
+            try:
+                font_path = 'path_to_font.ttf'  # Replace with your font file path
+                font = ImageFont.truetype(font_path, size=24)
+            except IOError:
+                st.error("Error loading font. Falling back to default font.")
+                font = ImageFont.load_default()
+            
             # WordCloud
             st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user, df)
+            df_wc = helper.create_wordcloud(selected_user, df, font=font)
             if df_wc:
                 fig, ax = plt.subplots()
                 ax.imshow(df_wc)
