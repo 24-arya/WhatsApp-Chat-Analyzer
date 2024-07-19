@@ -13,9 +13,15 @@ import time
 # Set page configuration
 st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide")
 
-# Custom CSS for responsive design
+st.sidebar.title("WhatsApp Chat Analyzer")
+# Load and display logo
+logo = Image.open('images/whatsapp-logo.png')  # Replace with the path to your logo file
+st.sidebar.image(logo, width=150)
+
+# Custom CSS
 st.markdown("""
     <style>
+    
         .title {
             text-align: center;
             color: #25D366; /* WhatsApp green color */
@@ -61,24 +67,9 @@ st.markdown("""
             display: flex;
             justify-content: center;
         }
-        /* Responsive adjustments */
-        @media screen and (max-width: 768px) {
-            .metric-card {
-                padding: 15px;
-            }
-            .stButton>button {
-                padding: 8px;
-            }
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# Sidebar
-st.sidebar.title("WhatsApp Chat Analyzer")
-
-# Load and display logo
-logo = Image.open('images/whatsapp-logo.png')  # Replace with the path to your logo file
-st.sidebar.image(logo, width=150)
 
 # Display header
 st.markdown("<div class='title'>WhatsApp Chat Analyzer</div>", unsafe_allow_html=True)
@@ -229,43 +220,40 @@ if uploaded_file is not None:
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig)
 
-            # Emoji analysis
+            # emoji analysis
             emoji_df = helper.emoji_helper(selected_user, df)
             st.title('Emoji Analysis')
 
             col1, col2 = st.columns(2)
 
             with col1:
-                st.dataframe(emoji_df)
+                    st.dataframe(emoji_df)
             with col2:
-                st.title("Top 5 most emojis used")
-                fig, ax = plt.subplots()
-                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
-                st.pyplot(fig)
+                    def set_title_with_size(title_text, font_size="30px"):
+                        html_title = f"""
+                                <h1 style="font-size: {font_size};"> {title_text} </h1>
+                            """
+                        st.write(html_title, unsafe_allow_html=True)
 
-            # Attempt to load a TrueType font or fallback to default font
-            try:
-                font_path = 'path_to_font.ttf'  # Replace with your font file path
-                font = ImageFont.truetype(font_path, size=24)
-            except IOError:
-                st.error("Error loading font. Falling back to default font.")
-                font = ImageFont.load_default()
-            
+
+                    set_title_with_size("Top 5 most emojis used")
+                    fig, ax = plt.subplots()
+                    ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+                    st.pyplot(fig)
+
             # WordCloud
             st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user, df, font=font)
-            if df_wc:
-                fig, ax = plt.subplots()
-                ax.imshow(df_wc)
-                ax.axis('off')  # Hide axis
-                st.pyplot(fig)
+            df_wc = helper.create_wordcloud(selected_user, df)
+            fig, ax = plt.subplots()
+            ax.imshow(df_wc)
+            st.pyplot(fig)
 
             # Most Common Words
             most_common_df = helper.most_common_words(selected_user, df)
-            st.title('Most Common Words')
             fig, ax = plt.subplots()
             ax.barh(most_common_df[0], most_common_df[1])
-            plt.xlabel('Count')
-            plt.ylabel('Words')
-            plt.tight_layout()
+            plt.xticks(rotation='vertical')
+            st.title('Most Common Words')
             st.pyplot(fig)
+
+
