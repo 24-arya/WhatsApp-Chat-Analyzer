@@ -280,12 +280,11 @@ if uploaded_file is not None:
             # WordCloud
             st.title("Wordcloud")
             font_path = 'inktype-font/Inktype-MAp2J.ttf'
-            wordcloud = WordCloud(font_path=font_path).generate(text)
-            df_wc = helper.create_wordcloud(selected_user, df)
-            fig_wordcloud, ax_wordcloud = plt.subplots()  # Use ax_wordcloud to reference the axes
-            ax_wordcloud.imshow(df_wc)
+            wordcloud = WordCloud(font_path=font_path).generate(' '.join(df['message']))
+            fig_wordcloud, ax_wordcloud = plt.subplots()
+            ax_wordcloud.imshow(wordcloud, interpolation='bilinear')
+            ax_wordcloud.axis("off")
             st.pyplot(fig_wordcloud)
-            plt.close(fig_wordcloud)  # Close the figure after displaying
 
             # Most Common Words
             most_common_df = helper.most_common_words(selected_user, df)
