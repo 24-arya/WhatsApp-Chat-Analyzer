@@ -3,6 +3,7 @@ import preprocessor
 import nltk
 import helper
 import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 import seaborn as sns
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -278,6 +279,8 @@ if uploaded_file is not None:
 
             # WordCloud
             st.title("Wordcloud")
+            font_path = 'inktype-font/Inktype-MAp2J.ttf'
+            wordcloud = WordCloud(font_path=font_path).generate(text)
             df_wc = helper.create_wordcloud(selected_user, df)
             fig_wordcloud, ax_wordcloud = plt.subplots()  # Use ax_wordcloud to reference the axes
             ax_wordcloud.imshow(df_wc)
