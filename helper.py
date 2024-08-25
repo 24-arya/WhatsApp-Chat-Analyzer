@@ -94,22 +94,17 @@ def emoji_helper(selected_user, df):
     
     # Sort dataframe by count in descending order
     emoji_df = emoji_df.sort_values(by='Count', ascending=False)
+
+    # Plot the emoji distribution
     fig, ax = plt.subplots()
-
-# Ensure you have enough data
-    if not emoji_df.empty and len(emoji_df) > 0:
-        # Plot pie chart using column names
-        ax.pie(
-            emoji_df['Count'].head(), 
-            labels=emoji_df['Emoji'].head(), 
-            autopct="%0.2f%%"
-        )
+    ax.pie(
+        emoji_df['Count'].head(), 
+        labels=emoji_df['Emoji'].head(), 
+        autopct="%0.2f%%"
+    )
+    ax.set_title('Emoji Distribution')
+    plt.show()
     
-        ax.set_title('Emoji Distribution')
-        plt.show()
-    else:
-        print("No data available to plot.")
-
     return emoji_df
 
 def monthly_timeline(selected_user,df):
