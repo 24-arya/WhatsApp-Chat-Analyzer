@@ -77,35 +77,15 @@ def most_common_words(selected_user, df):
     most_common_df = pd.DataFrame(Counter(words).most_common(20))
     return most_common_df
     
-def emoji_helper(selected_user, df):
-    # Filter the dataframe based on the selected user
+def emoji_helper(selected_user,df):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
     emojis = []
-    emoji_set = set(emoji.EMOJI_DATA.keys())  # Get all emoji characters
-    
-    # Extract emojis from messages
     for message in df['message']:
-        emojis.extend([c for c in message if c in emoji_set])
-    
-    # Count the occurrences of each emoji
-    emoji_counts = Counter(emojis)
-    emoji_df = pd.DataFrame(emoji_counts.items(), columns=['Emoji', 'Count'])
-    
-    # Sort dataframe by count in descending order
-    emoji_df = emoji_df.sort_values(by='Count', ascending=False)
+        emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI['en']])
+    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
 
-    # Plot the emoji distribution
-    fig, ax = plt.subplots()
-    ax.pie(
-        emoji_df['Count'].head(), 
-        labels=emoji_df['Emoji'].head(), 
-        autopct="%0.2f%%"
-    )
-    ax.set_title('Emoji Distribution')
-    plt.show()
-    
     return emoji_df
 
 def monthly_timeline(selected_user,df):
