@@ -3,6 +3,7 @@ extract = URLExtract()
 from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
+import matplotlib.pyplot as plt
 import emoji
 import calendar
 def fetch_stats(selected_user, df):
