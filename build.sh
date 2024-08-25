@@ -6,3 +6,4 @@ pip install altair==4.0.0
 pip install urlextract
 pip install wordcloud matplotlib
 pip install --upgrade emoji
+pip install matplotlib
