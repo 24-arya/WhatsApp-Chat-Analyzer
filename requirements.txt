@@ -7,4 +7,4 @@ Pillow==8.4.0
 MarkupSafe==2.1.5
 urlextract
 wordcloud
-emoji
+emoji==1.7.0
