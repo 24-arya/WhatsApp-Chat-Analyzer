@@ -255,26 +255,37 @@ if uploaded_file is not None:
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig_most_negative_users)
 
-            # emoji analysis
-            emoji_df = helper.emoji_helper(selected_user, df)
-            st.title('Emoji Analysis')
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.dataframe(emoji_df)
-            with col2:
-                def set_title_with_size(title_text, font_size="30px"):
-                    html_title = f"""
-                                <h1 style="font-size: {font_size};"> {title_text} </h1>
-                            """
-                    st.write(html_title, unsafe_allow_html=True)
-
-
-                set_title_with_size("Top 5 most emojis used")
-                fig_emoji, ax = plt.subplots()
-                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
-                st.pyplot(fig_emoji)
+        # emoji analysis
+        # Assuming df and selected_user are already defined
+        emoji_df = helper.emoji_helper(selected_user, df)
+        
+        # Set the title for the Streamlit app
+        st.title('Emoji Analysis')
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.dataframe(emoji_df)
+        
+        with col2:
+            def set_title_with_size(title_text, font_size="30px"):
+                html_title = f"""
+                            <h1 style="font-size: {font_size};"> {title_text} </h1>
+                        """
+                st.write(html_title, unsafe_allow_html=True)
+        
+            set_title_with_size("Top 5 Most Used Emojis")
+        
+            # Plotting
+            fig_emoji, ax = plt.subplots()
+            top_5_emoji_df = emoji_df.head()  # Get the top 5 emojis
+            ax.pie(
+                top_5_emoji_df['Count'],  # Use column names
+                labels=top_5_emoji_df['Emoji'],  # Use column names
+                autopct="%0.2f%%"
+            )
+            ax.set_title('Top 5 Emojis Distribution')
+            st.pyplot(fig_emoji)
 
             # WordCloud
             st.title("Wordcloud")
