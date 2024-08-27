@@ -253,20 +253,23 @@ if uploaded_file is not None:
             st.title('Emoji Analysis')
 
             col1, col2 = st.columns(2)
-
+            
             with col1:
                 st.dataframe(emoji_df)
+                
             with col2:
                 def set_title_with_size(title_text, font_size="30px"):
                     html_title = f"""
                                 <h1 style="font-size: {font_size};"> {title_text} </h1>
                             """
                     st.write(html_title, unsafe_allow_html=True)
-
-                set_title_with_size("Top 5 Most Emojis Used")
-                fig_emoji, ax = plt.subplots()
-                ax.pie(emoji_df['count'].head(), labels=emoji_df['emoji'].head(), autopct="%0.2f")
-                st.pyplot(fig_emoji)
+        
+            set_title_with_size("Top 5 Most Emojis Used")
+            
+            # Update with the correct column names
+            fig_emoji, ax = plt.subplots()
+            ax.pie(emoji_df['frequency'].head(), labels=emoji_df['emoji'].head(), autopct="%0.2f")
+            st.pyplot(fig_emoji)
 
             # WordCloud
             st.title("Wordcloud")
