@@ -10,6 +10,8 @@ from PIL import Image
 import io
 import time
 import zipfile
+import emoji
+from collections import Counter
 
 
 def create_zip_file():
@@ -225,73 +227,26 @@ if uploaded_file is not None:
             st.title('Sentiment Analysis')
             if selected_user == 'Overall':
                 x = df['user'][sentiment_df['value'] == 1].value_counts().head(10)
-                y = df['user'][sentiment_df['value'] == -1].value_counts().head(10)
-                z = df['user'][sentiment_df['value'] == 0].value_counts().head(10)
-
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    st.subheader("Most Positive Users")
-                    fig_most_positive_users, ax = plt.subplots()
-                    ax.bar(x.index, x.values, color='green')
-                    plt.xticks(rotation='vertical')
-                    st.pyplot(fig_most_positive_users)
-                with col2:
-                    st.subheader("Most Neutral Users")
-                    fig_most_neutral_users, ax = plt.subplots()
-                    ax.bar(z.index, z.values, color='grey')
-                    plt.xticks(rotation='vertical')
-                    st.pyplot(fig_most_neutral_users)
-                with col3:
-                    st.subheader("Most Negative Users")
-                    fig_most_negative_users, ax = plt.subplots()
-                    ax.bar(y.index, y.values, color='red')
-                    plt.xticks(rotation='vertical')
-                    st.pyplot(fig_most_negative_users)
+                fig_most_positive_users, ax = plt.subplots()
+                ax.bar(x.index, x.values, color='green')
+                plt.xticks(rotation='vertical')
+                st.pyplot(fig_most_positive_users)
+                
+                x = df['user'][sentiment_df['value'] == -1].value_counts().head(10)
+                fig_most_negative_users, ax = plt.subplots()
+                ax.bar(x.index, x.values, color='red')
+                plt.xticks(rotation='vertical')
+                st.pyplot(fig_most_negative_users)
+                
+                x = df['user'][sentiment_df['value'] == 0].value_counts().head(10)
+                fig_most_neutral_users, ax = plt.subplots()
+                ax.bar(x.index, x.values, color='gray')
+                plt.xticks(rotation='vertical')
+                st.pyplot(fig_most_neutral_users)
 
             # Emoji Analysis
-            emoji_df = helper.emoji_helper(selected_user, df)
             st.title('Emoji Analysis')
-
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.dataframe(emoji_df)
-                
-            with col2:
-                def set_title_with_size(title_text, font_size="30px"):
-                    html_title = f"""
-                                <h1 style="font-size: {font_size};"> {title_text} </h1>
-                            """
-                    st.write(html_title, unsafe_allow_html=True)
-        
-            set_title_with_size("Top 5 Most Emojis Used")
-            
-            # Update with the correct column names
+            emoji_df = helper.emoji_helper(selected_user, df)
             fig_emoji, ax = plt.subplots()
-            ax.pie(emoji_df['frequency'].head(), labels=emoji_df['emoji'].head(), autopct="%0.2f")
+            ax.pie(emoji_df['Count'].head(), labels=emoji_df['Emoji'].head(), autopct="%0.2f")
             st.pyplot(fig_emoji)
-
-            # WordCloud
-            st.title("Wordcloud")
-            df_wc = helper.create_wordcloud(selected_user, df)
-            fig_wordcloud, ax = plt.subplots()
-            ax.imshow(df_wc)
-            ax.axis('off')  # Hide axes
-            st.pyplot(fig_wordcloud)
-
-            # Most Common Words
-            most_common_df = helper.most_common_words(selected_user, df)
-            fig_most_common_words, ax = plt.subplots()
-            ax.bar(most_common_df['word'], most_common_df['count'])
-            plt.xticks(rotation='vertical')
-            st.title('Most Common Words')
-            st.pyplot(fig_most_common_words)
-
-            # Create and provide download button
-            zip_data = create_zip_file()
-            st.download_button(
-                label="Download All Outputs",
-                data=zip_data,
-                file_name="analysis_outputs.zip",
-                mime="application/zip"
-            )
