@@ -18,11 +18,11 @@ def create_zip_file():
     with zipfile.ZipFile(buffer, 'w') as zip_file:
         # Create and write images
         for analysis_name, fig in zip(
-            ["Monthly_Timeline", "Daily_Timeline", "Most_Busy_Day", "Most_Busy_Month", "Weekly_Activity_Map","fig_most_busy_users","emoji_pie_chart", "Wordcloud", "Most_Common_Words","fig_most_positive_users","fig_most_neutral_users","fig_most_negative_users"],
-            [fig_monthly, fig_daily, fig_busy_day, fig_busy_month, fig_heatmap, fig_most_busy_users,fig_emoji,fig_wordcloud, fig_most_common_words,fig_most_positive_users,fig_most_neutral_users,fig_most_negative_users]
+            ["Monthly_Timeline", "Daily_Timeline", "Most_Busy_Day", "Most_Busy_Month", "Weekly_Activity_Map", "Most_Busy_Users", "Emoji_Pie_Chart", "Wordcloud", "Most_Common_Words", "Most_Positive_Users", "Most_Neutral_Users", "Most_Negative_Users"],
+            [fig_monthly, fig_daily, fig_busy_day, fig_busy_month, fig_heatmap, fig_most_busy_users, fig_emoji, fig_wordcloud, fig_most_common_words, fig_most_positive_users, fig_most_neutral_users, fig_most_negative_users]
         ):
             img_buffer = io.BytesIO()
-            fig.savefig(img_buffer, format='png',bbox_inches='tight')
+            fig.savefig(img_buffer, format='png', bbox_inches='tight')
             img_buffer.seek(0)
             zip_file.writestr(f"{analysis_name}.png", img_buffer.read())
 
@@ -39,6 +39,7 @@ def create_zip_file():
     buffer.seek(0)
     return buffer.getvalue()
 
+
 # Set page configuration
 st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide")
 
@@ -49,13 +50,12 @@ logo_path = r"images/whatsapp-logo.png"  # Replace with the correct path and ext
 # Open the image file
 logo = Image.open(logo_path)
 
- # Replace with the path to your logo file
+# Replace with the path to your logo file
 st.sidebar.image(logo, width=150)
 
 # Custom CSS
 st.markdown("""
     <style>
-
         .title {
             text-align: center;
             color: #25D366; /* WhatsApp green color */
@@ -127,14 +127,12 @@ if uploaded_file is not None:
         "nu": [sentiments.polarity_scores(i)["neu"] for i in df['message']]
     }
 
-
     def sentiment(d):
         if d["po"] >= d["ne"] and d["po"] >= d["nu"]:
             return 1
         if d["ne"] >= d["po"] and d["ne"] >= d["nu"]:
             return -1
         return 0
-
 
     sentiment_df = pd.DataFrame(sentiment_data)
     sentiment_df['value'] = sentiment_df.apply(lambda row: sentiment(row), axis=1)
@@ -156,19 +154,13 @@ if uploaded_file is not None:
             st.title('Top Statistics')
             col1, col2, col3, col4 = st.columns(4)
             with col1:
-
-                st.markdown("<div class='metric-card'><h4>Total Mssgs</h4><h2>{}</h2></div>".format(num_messages),
-                            unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-card'><h4>Total Mssgs</h4><h2>{num_messages}</h2></div>", unsafe_allow_html=True)
             with col2:
-                st.markdown("<div class='metric-card'><h4>Total Words</h4><h2>{}</h2></div>".format(words),
-                            unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-card'><h4>Total Words</h4><h2>{words}</h2></div>", unsafe_allow_html=True)
             with col3:
-                st.markdown(
-                    "<div class='metric-card'><h4>Media Shared</h4><h2>{}</h2></div>".format(num_media_messages),
-                    unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-card'><h4>Media Shared</h4><h2>{num_media_messages}</h2></div>", unsafe_allow_html=True)
             with col4:
-                st.markdown("<div class='metric-card'><h4>Links Shared</h4><h2>{}</h2></div>".format(num_links),
-                            unsafe_allow_html=True)
+                st.markdown(f"<div class='metric-card'><h4>Links Shared</h4><h2>{num_links}</h2></div>", unsafe_allow_html=True)
 
             # Monthly Timeline
             st.title('Monthly Timeline')
@@ -256,7 +248,7 @@ if uploaded_file is not None:
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig_most_negative_users)
 
-            # emoji analysis
+            # Emoji Analysis
             emoji_df = helper.emoji_helper(selected_user, df)
             st.title('Emoji Analysis')
 
@@ -271,10 +263,9 @@ if uploaded_file is not None:
                             """
                     st.write(html_title, unsafe_allow_html=True)
 
-
-                set_title_with_size("Top 5 most emojis used")
+                set_title_with_size("Top 5 Most Emojis Used")
                 fig_emoji, ax = plt.subplots()
-                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+                ax.pie(emoji_df['count'].head(), labels=emoji_df['emoji'].head(), autopct="%0.2f")
                 st.pyplot(fig_emoji)
 
             # WordCloud
@@ -282,12 +273,13 @@ if uploaded_file is not None:
             df_wc = helper.create_wordcloud(selected_user, df)
             fig_wordcloud, ax = plt.subplots()
             ax.imshow(df_wc)
+            ax.axis('off')  # Hide axes
             st.pyplot(fig_wordcloud)
 
             # Most Common Words
             most_common_df = helper.most_common_words(selected_user, df)
             fig_most_common_words, ax = plt.subplots()
-            ax.bar(most_common_df[0], most_common_df[1])
+            ax.bar(most_common_df['word'], most_common_df['count'])
             plt.xticks(rotation='vertical')
             st.title('Most Common Words')
             st.pyplot(fig_most_common_words)
