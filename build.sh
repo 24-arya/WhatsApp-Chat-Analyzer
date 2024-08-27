@@ -7,3 +7,4 @@ pip install urlextract
 pip install wordcloud matplotlib
 pip install --upgrade emoji
 pip install matplotlib
+pip install --upgrade pillow
