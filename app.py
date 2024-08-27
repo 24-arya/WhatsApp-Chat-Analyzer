@@ -11,17 +11,18 @@ import io
 import time
 import zipfile
 
+
 def create_zip_file():
     buffer = io.BytesIO()
 
     with zipfile.ZipFile(buffer, 'w') as zip_file:
         # Create and write images
         for analysis_name, fig in zip(
-            ["Monthly_Timeline", "Daily_Timeline", "Most_Busy_Day", "Most_Busy_Month", "Weekly_Activity_Map", "fig_most_busy_users", "emoji_pie_chart", "Wordcloud", "Most_Common_Words", "fig_most_positive_users", "fig_most_neutral_users", "fig_most_negative_users"],
-            [fig_monthly, fig_daily, fig_busy_day, fig_busy_month, fig_heatmap, fig_most_busy_users, fig_emoji, fig_wordcloud, fig_most_common_words, fig_most_positive_users, fig_most_neutral_users, fig_most_negative_users]
+            ["Monthly_Timeline", "Daily_Timeline", "Most_Busy_Day", "Most_Busy_Month", "Weekly_Activity_Map","fig_most_busy_users","emoji_pie_chart", "Wordcloud", "Most_Common_Words","fig_most_positive_users","fig_most_neutral_users","fig_most_negative_users"],
+            [fig_monthly, fig_daily, fig_busy_day, fig_busy_month, fig_heatmap, fig_most_busy_users,fig_emoji,fig_wordcloud, fig_most_common_words,fig_most_positive_users,fig_most_neutral_users,fig_most_negative_users]
         ):
             img_buffer = io.BytesIO()
-            fig.savefig(img_buffer, format='png', bbox_inches='tight')
+            fig.savefig(img_buffer, format='png',bbox_inches='tight')
             img_buffer.seek(0)
             zip_file.writestr(f"{analysis_name}.png", img_buffer.read())
 
@@ -41,17 +42,20 @@ def create_zip_file():
 # Set page configuration
 st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide")
 
-# Sidebar
 st.sidebar.title("WhatsApp Chat Analyzer")
-
 # Load and display logo
-logo_path = "images/whatsapp-logo.png"  # Replace with the correct path and extension
+logo_path = r"images/whatsapp-logo.png"  # Replace with the correct path and extension
+
+# Open the image file
 logo = Image.open(logo_path)
+
+ # Replace with the path to your logo file
 st.sidebar.image(logo, width=150)
 
 # Custom CSS
 st.markdown("""
     <style>
+
         .title {
             text-align: center;
             color: #25D366; /* WhatsApp green color */
@@ -68,7 +72,6 @@ st.markdown("""
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             color: black;
-            text-align: center;
         }
         .subheader {
             font-size: 20px;
@@ -93,6 +96,7 @@ st.markdown("""
         .stDataFrame {
             font-size: 16px;
         }
+        /* Center align the logo in the sidebar */
         .css-1v3fvcr {
             display: flex;
             justify-content: center;
@@ -109,6 +113,7 @@ nltk.download('vader_lexicon')
 # File uploader
 uploaded_file = st.sidebar.file_uploader("Choose a file", type=["txt"])
 
+# Check if a file has been uploaded
 if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
     data = bytes_data.decode("utf-8")
@@ -122,12 +127,14 @@ if uploaded_file is not None:
         "nu": [sentiments.polarity_scores(i)["neu"] for i in df['message']]
     }
 
+
     def sentiment(d):
         if d["po"] >= d["ne"] and d["po"] >= d["nu"]:
             return 1
         if d["ne"] >= d["po"] and d["ne"] >= d["nu"]:
             return -1
         return 0
+
 
     sentiment_df = pd.DataFrame(sentiment_data)
     sentiment_df['value'] = sentiment_df.apply(lambda row: sentiment(row), axis=1)
@@ -142,25 +149,31 @@ if uploaded_file is not None:
     # Show analysis button
     if st.sidebar.button("Show Analysis"):
         with st.spinner('Processing...'):
-            time.sleep(2)  # Simulate a delay for demonstration purposes
+            # Simulate a delay for demonstration purposes
+            time.sleep(2)
             num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_user, df)
-
             # Stats area
             st.title('Top Statistics')
             col1, col2, col3, col4 = st.columns(4)
             with col1:
-                st.markdown(f"<div class='metric-card'><h4>Total Mssgs</h4><h2>{num_messages}</h2></div>", unsafe_allow_html=True)
+
+                st.markdown("<div class='metric-card'><h4>Total Mssgs</h4><h2>{}</h2></div>".format(num_messages),
+                            unsafe_allow_html=True)
             with col2:
-                st.markdown(f"<div class='metric-card'><h4>Total Words</h4><h2>{words}</h2></div>", unsafe_allow_html=True)
+                st.markdown("<div class='metric-card'><h4>Total Words</h4><h2>{}</h2></div>".format(words),
+                            unsafe_allow_html=True)
             with col3:
-                st.markdown(f"<div class='metric-card'><h4>Media Shared</h4><h2>{num_media_messages}</h2></div>", unsafe_allow_html=True)
+                st.markdown(
+                    "<div class='metric-card'><h4>Media Shared</h4><h2>{}</h2></div>".format(num_media_messages),
+                    unsafe_allow_html=True)
             with col4:
-                st.markdown(f"<div class='metric-card'><h4>Links Shared</h4><h2>{num_links}</h2></div>", unsafe_allow_html=True)
+                st.markdown("<div class='metric-card'><h4>Links Shared</h4><h2>{}</h2></div>".format(num_links),
+                            unsafe_allow_html=True)
 
             # Monthly Timeline
             st.title('Monthly Timeline')
             timeline = helper.monthly_timeline(selected_user, df)
-            fig_monthly, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+            fig_monthly, ax = plt.subplots()
             ax.plot(timeline['time'], timeline['message'], color='#25D366')
             plt.xticks(rotation='vertical')
             plt.tight_layout()
@@ -169,7 +182,7 @@ if uploaded_file is not None:
             # Daily Timeline
             st.title('Daily Timeline')
             daily_timeline = helper.daily_timeline(selected_user, df)
-            fig_daily, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+            fig_daily, ax = plt.subplots()
             ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='#128C7E')
             plt.xticks(rotation='vertical')
             plt.tight_layout()
@@ -182,7 +195,7 @@ if uploaded_file is not None:
             with col1:
                 st.header('Most Busy Day')
                 busy_day = helper.week_activity_map(selected_user, df)
-                fig_busy_day, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+                fig_busy_day, ax = plt.subplots()
                 ax.bar(busy_day.index, busy_day.values)
                 plt.xticks(rotation='vertical')
                 plt.tight_layout()
@@ -191,14 +204,14 @@ if uploaded_file is not None:
             with col2:
                 st.header('Most Busy Month')
                 busy_month = helper.month_activity_map(selected_user, df)
-                fig_busy_month, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+                fig_busy_month, ax = plt.subplots()
                 ax.bar(busy_month.index, busy_month.values, color='orange')
                 plt.tight_layout()
                 st.pyplot(fig_busy_month)
 
             st.title("Weekly Activity Map")
             user_heatmap = helper.activity_heatmap(selected_user, df)
-            fig_heatmap, ax = plt.subplots(figsize=(10, 6))  # Adjust size as needed
+            fig_heatmap, ax = plt.subplots()
             ax = sns.heatmap(user_heatmap)
             st.pyplot(fig_heatmap)
 
@@ -206,7 +219,7 @@ if uploaded_file is not None:
             if selected_user == 'Overall':
                 st.title('Most Busy Users')
                 x, new_df = helper.most_busy_users(df)
-                fig_most_busy_users, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+                fig_most_busy_users, ax = plt.subplots()
                 col1, col2 = st.columns(2)
 
                 with col1:
@@ -225,52 +238,65 @@ if uploaded_file is not None:
 
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    st.header('Most Positive Users')
-                    fig_most_positive_users, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
-                    ax.bar(x.index, x.values)
+                    st.subheader("Most Positive Users")
+                    fig_most_positive_users, ax = plt.subplots()
+                    ax.bar(x.index, x.values, color='green')
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig_most_positive_users)
                 with col2:
-                    st.header('Most Neutral Users')
-                    fig_most_neutral_users, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
-                    ax.bar(z.index, z.values, color='gray')
+                    st.subheader("Most Neutral Users")
+                    fig_most_neutral_users, ax = plt.subplots()
+                    ax.bar(z.index, z.values, color='grey')
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig_most_neutral_users)
                 with col3:
-                    st.header('Most Negative Users')
-                    fig_most_negative_users, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
+                    st.subheader("Most Negative Users")
+                    fig_most_negative_users, ax = plt.subplots()
                     ax.bar(y.index, y.values, color='red')
                     plt.xticks(rotation='vertical')
                     st.pyplot(fig_most_negative_users)
 
-            # Emoji Analysis
+            # emoji analysis
+            emoji_df = helper.emoji_helper(selected_user, df)
             st.title('Emoji Analysis')
-            emoji_df = helper.emoji_analysis(df)
-            fig_emoji, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
-            ax.pie(emoji_df['count'], labels=emoji_df['emoji'], autopct='%1.1f%%')
-            st.pyplot(fig_emoji)
 
-            # Word Cloud
-            st.title('Word Cloud')
-            wordcloud = helper.create_wordcloud(df)
-            fig_wordcloud, ax = plt.subplots(figsize=(10, 10))  # Adjust size as needed
-            ax.imshow(wordcloud, interpolation='bilinear')
-            ax.axis('off')
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.dataframe(emoji_df)
+            with col2:
+                def set_title_with_size(title_text, font_size="30px"):
+                    html_title = f"""
+                                <h1 style="font-size: {font_size};"> {title_text} </h1>
+                            """
+                    st.write(html_title, unsafe_allow_html=True)
+
+
+                set_title_with_size("Top 5 most emojis used")
+                fig_emoji, ax = plt.subplots()
+                ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+                st.pyplot(fig_emoji)
+
+            # WordCloud
+            st.title("Wordcloud")
+            df_wc = helper.create_wordcloud(selected_user, df)
+            fig_wordcloud, ax = plt.subplots()
+            ax.imshow(df_wc)
             st.pyplot(fig_wordcloud)
 
             # Most Common Words
-            st.title('Most Common Words')
-            most_common_df = helper.most_common_words(df)
-            fig_most_common_words, ax = plt.subplots(figsize=(10, 5))  # Adjust size as needed
-            ax.bar(most_common_df['word'], most_common_df['count'])
+            most_common_df = helper.most_common_words(selected_user, df)
+            fig_most_common_words, ax = plt.subplots()
+            ax.bar(most_common_df[0], most_common_df[1])
             plt.xticks(rotation='vertical')
+            st.title('Most Common Words')
             st.pyplot(fig_most_common_words)
 
-            # Create download button
+            # Create and provide download button
             zip_data = create_zip_file()
             st.download_button(
-                label="Download All Plots and Data",
+                label="Download All Outputs",
                 data=zip_data,
-                file_name="analysis.zip",
+                file_name="analysis_outputs.zip",
                 mime="application/zip"
             )
