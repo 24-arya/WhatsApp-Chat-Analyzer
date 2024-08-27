@@ -3,7 +3,7 @@ nltk==3.6.5
 matplotlib==3.5.1
 seaborn==0.12.2
 pandas==1.1.3
-Pillow==8.4.0
+Pillow==9.5.0
 MarkupSafe==2.1.5
 urlextract
 wordcloud
