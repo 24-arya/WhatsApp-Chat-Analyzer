@@ -250,3 +250,27 @@ if uploaded_file is not None:
             fig_emoji, ax = plt.subplots()
             ax.pie(emoji_df['Count'].head(), labels=emoji_df['Emoji'].head(), autopct="%0.2f")
             st.pyplot(fig_emoji)
+
+            # WordCloud
+            st.title("Wordcloud")
+            df_wc = helper.create_wordcloud(selected_user, df)
+            fig_wordcloud, ax = plt.subplots()
+            ax.imshow(df_wc)
+            st.pyplot(fig_wordcloud)
+
+            # Most Common Words
+            most_common_df = helper.most_common_words(selected_user, df)
+            fig_most_common_words, ax = plt.subplots()
+            ax.bar(most_common_df[0], most_common_df[1])
+            plt.xticks(rotation='vertical')
+            st.title('Most Common Words')
+            st.pyplot(fig_most_common_words)
+
+            # Create and provide download button
+            zip_data = create_zip_file()
+            st.download_button(
+                label="Download All Outputs",
+                data=zip_data,
+                file_name="analysis_outputs.zip",
+                mime="application/zip"
+            )
