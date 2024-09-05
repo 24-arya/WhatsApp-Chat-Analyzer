@@ -1,13 +1,13 @@
 import pandas as pd
 import re
 
-
 def preprocess(data):
     # Updated pattern to match 12-hour time format with AM/PM
     pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s[APap][Mm]\s-\s'
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
 
+    # Create DataFrame from extracted messages and dates
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
     df['message_date'] = df['message_date'].str.strip()
 
@@ -30,6 +30,10 @@ def preprocess(data):
     df['message'] = messages
     df.drop(columns=['user_message'], inplace=True)
 
+    # Remove messages that contain "@number"
+    df = df[~df['message'].str.contains(r'@\d+', na=False)]
+
+    # Additional date and time-related features
     df['only_date'] = df['date'].dt.date
     df['year'] = df['date'].dt.year
     df['month_num'] = df['date'].dt.month_name()
