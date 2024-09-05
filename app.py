@@ -265,7 +265,7 @@ if uploaded_file is not None:
                     st.dataframe(new_df)
 
             # Sentiment Analysis
-            st.title('Sentiment Analysis
+            st.title('Sentiment Analysis)
             df.reset_index(drop=True, inplace=True)
             sentiment_df.reset_index(drop=True, inplace=True)
             if selected_user == 'Overall':
