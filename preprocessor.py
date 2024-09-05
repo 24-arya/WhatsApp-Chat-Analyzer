@@ -1,14 +1,20 @@
 import pandas as pd
 import re
 
+
 def preprocess(data):
-    pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s-\s'
+    # Updated pattern to match 12-hour time format with AM/PM
+    pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s[APap][Mm]\s-\s'
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
+
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
-    df['message_date'] = df['message_date'].str.strip()  # Remove potential leading/trailing whitespaces
-    df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %H:%M -')
+    df['message_date'] = df['message_date'].str.strip()
+
+    # Updated datetime parsing format to 12-hour time with AM/PM
+    df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%y, %I:%M %p -')
     df.rename(columns={'message_date': 'date'}, inplace=True)
+
     users = []
     messages = []
     for message in df['user_message']:
@@ -33,15 +39,13 @@ def preprocess(data):
     df['hour'] = df['date'].dt.hour
     df['minute'] = df['date'].dt.minute
 
+    # Create 'period' in 12-hour format with AM/PM
     period = []
-    for hour in df[['day_name', 'hour']]['hour']:
-        if hour == 23:
-            period.append(str(hour) + '-' + str('00'))
-        elif hour == 0:
-            period.append(str('00') + '-' + str(hour + 1))
-        else:
-            period.append(str(hour) + '-' + str(hour + 1))
-
+    for idx, row in df.iterrows():
+        start_hour = row['date'].strftime('%I %p')
+        end_datetime = row['date'] + pd.Timedelta(hours=1)
+        end_hour = end_datetime.strftime('%I %p')
+        period.append(f"{start_hour} - {end_hour}")
     df['period'] = period
 
     return df
