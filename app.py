@@ -1,8 +1,3 @@
-# Remove all Streamlit-related imports and methods
-# For example, remove:
-# import streamlit as st
-# st.sidebar, st.markdown, st.image, etc.
-
 import preprocessor
 import nltk
 import helper
