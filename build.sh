@@ -8,3 +8,4 @@ pip install wordcloud matplotlib
 pip install --upgrade emoji
 pip install matplotlib
 pip install --upgrade Pillow
+pip install Flask matplotlib seaborn pandas nltk reportlab pillow
